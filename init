@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo "Loading, please wait..."
-
 # Default PATH differs between shells, and is not automatically exported
 # by klibc dash.  Make it consistent.
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin
@@ -14,6 +12,12 @@ export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 mkdir -p /var/lock
 mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
 mount -t proc -o nodev,noexec,nosuid proc /proc
+
+export quiet=n
+for x in $(cat /proc/cmdline); do
+	[ "${x}" != "quiet" ] || quiet=y
+done
+[ "${quiet}" = "y" ] || echo "Loading, please wait..."
 
 # Note that this only becomes /dev on the real filesystem if udev's scripts
 # are used; which they will be, but it's worth pointing out
@@ -50,7 +54,6 @@ export BOOTIF=
 export UBIMTD=
 export break=
 export init=/sbin/init
-export quiet=n
 export readonly=y
 export rootmnt=/root
 export debug=
@@ -132,9 +135,6 @@ for x in $(cat /proc/cmdline); do
 			panic=
 			;;
 		esac
-		;;
-	quiet)
-		quiet=y
 		;;
 	ro)
 		readonly=y

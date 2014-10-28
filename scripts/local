@@ -53,13 +53,23 @@ local_device_setup()
 	if [ -z "${FSTYPE}" ]; then
 		log_begin_msg "Waiting for $2 file system"
 
-		FSTYPE=$(wait-for-root "${1}" ${ROOTDELAY:-$30})
+		while true; do
+			FSTYPE=$(wait-for-root "${1}" ${ROOTDELAY:-$30})
 
-		if [ -n "${FSTYPE}" ]; then
-			log_end_msg 0
-		else
-			log_end_msg 1 || true
-		fi
+			if [ -n "${FSTYPE" ]; then
+				log_end_msg 0
+				break
+			fi
+
+			# Run failure hooks, hoping one of them can
+			# fix up the system and we can restart the
+			# wait loop.  If they all fail, abort and move
+			# on to the panic handler and shell.
+			if ! try_failure_hooks; then
+				log_end_msg 1 || true
+				break
+			fi
+		done
 	fi
 
 	# We've given up, but we'll let the user fix matters if they can

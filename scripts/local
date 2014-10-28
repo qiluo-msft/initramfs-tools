@@ -35,7 +35,7 @@ local_bottom()
 # $2=optionname (for root and etc)
 local_device_setup()
 {
-	wait_for_udev 10
+	FSTYPE=$(wait-for-root "${1}" 10)
 
 	# Load ubi with the correct MTD partition and return since fstype
 	# doesn't work with a char device like ubi.
@@ -50,23 +50,12 @@ local_device_setup()
 		return
 	fi
 
-	# If the root device hasn't shown up yet, give it a little while
-	# to deal with removable devices
-	if [ ! -e "$1" ] || ! $(get_fstype "$1" >/dev/null); then
+	if [ -z "${FSTYPE}" ]; then
 		log_begin_msg "Waiting for $2 file system"
 
-		# Default delay is 30s
-		slumber=${ROOTDELAY:-30}
+		FSTYPE=$(wait-for-root "${1}" ${ROOTDELAY:-$30})
 
-		slumber=$(( ${slumber} * 10 ))
-		while [ ! -e "$1" ] \
-		|| ! $(get_fstype "$1" >/dev/null); do
-			/bin/sleep 0.1
-			slumber=$(( ${slumber} - 1 ))
-			[ ${slumber} -gt 0 ] || break
-		done
-
-		if [ ${slumber} -gt 0 ]; then
+		if [ -n "${FSTYPE}" ]; then
 			log_end_msg 0
 		else
 			log_end_msg 1 || true
@@ -111,10 +100,8 @@ local_mount_root()
 	local_top
 	local_device_setup "${ROOT}" root
 
-	# Get the root filesystem type if not set
-	if [ -z "${ROOTFSTYPE}" ]; then
-		FSTYPE=$(get_fstype "${ROOT}")
-	else
+	# Allow overriding the detected root filesystem type
+	if [ -n "${ROOTFSTYPE}" ]; then
 		FSTYPE=${ROOTFSTYPE}
 	fi
 

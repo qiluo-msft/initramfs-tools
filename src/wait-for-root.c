@@ -13,7 +13,7 @@
 #include <fcntl.h>
 
 
-static int device_queued   (struct udev *udev, const char *path);
+static int any_device_queued (struct udev *udev);
 static int matching_device (struct udev_device *device, const char *path);
 
 static void alarm_handler (int signum);
@@ -70,7 +70,7 @@ main (int   argc,
 	 * to wait for it can obtain the filesystem type by looking up the
 	 * udevdb record by major/minor.
 	 */
-	if ((! device_queued (udev, devpath))
+	if ((! any_device_queued (udev))
 	    && (stat (path, &devstat) == 0)
 	    && S_ISBLK (devstat.st_mode))
 	{
@@ -125,34 +125,18 @@ exit:
 
 
 static int
-device_queued (struct udev *udev,
-	       const char * devpath)
+any_device_queued (struct udev *udev)
 {
 	struct udev_queue *     udev_queue;
-	struct udev_list_entry *queue_entry;
-	int                     found = 0;
+	int                     empty;
 
 	udev_queue = udev_queue_new (udev);
 
-	for (queue_entry = udev_queue_get_queued_list_entry (udev_queue);
-	     queue_entry != NULL;
-	     queue_entry = udev_list_entry_get_next (queue_entry)) {
-		const char *        syspath;
-		struct udev_device *udev_device;
-
-		syspath = udev_list_entry_get_name (queue_entry);
-		udev_device = udev_device_new_from_syspath (udev, syspath);
-		if (udev_device) {
-			if (matching_device (udev_device, devpath))
-				found = 1;
-
-			udev_device_unref (udev_device);
-		}
-	}
+	empty = udev_queue_get_queue_is_empty (udev_queue);
 
 	udev_queue_unref (udev_queue);
 
-	return found;
+	return !empty;
 }
 
 static int

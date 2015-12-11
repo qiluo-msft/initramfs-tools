@@ -434,6 +434,10 @@ dep_add_modules_mount()
 		block=${dev_node#/dev/i2o/}
 		block=${block%%[0-9]*}
 		block='i2o!'$block
+	# nvme device
+	elif [ "${dev_node#/dev/nvme}" != "${dev_node}" ]; then
+		block=${dev_node#/dev/}
+		block=${block%p*}
 	# classical block device
 	else
 		block=${dev_node#/dev/}

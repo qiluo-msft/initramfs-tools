@@ -237,29 +237,7 @@ if read_fstab_entry /usr; then
 fi
 
 validate_init() {
-	checktarget="${1}"
-
-	# Work around absolute symlinks
-	if [ -d "${rootmnt}" ] && [ -h "${rootmnt}${checktarget}" ]; then
-		checktarget="$(readlink "${rootmnt}${checktarget}")"
-		case "$checktarget" in
-		/*)
-			;;
-		*)
-			checktarget="${1%/*}/$checktarget"
-			;;
-		esac
-	fi
-
-	# Make sure the specified init can be executed
-	if [ ! -x "${rootmnt}${checktarget}" ]; then
-		return 1
-	fi
-
-	# Upstart uses /etc/init as configuration directory :-/
-	if [ -d "${rootmnt}${checktarget}" ]; then
-		return 1
-	fi
+	run-init -n "${rootmnt}" "${1}"
 }
 
 # Check init is really there

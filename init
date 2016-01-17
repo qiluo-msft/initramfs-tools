@@ -230,6 +230,12 @@ mount_premount
 mountroot
 log_end_msg
 
+if read_fstab_entry /usr; then
+	log_begin_msg "Mounting /usr file system"
+	mountfs /usr
+	log_end_msg
+fi
+
 validate_init() {
 	checktarget="${1}"
 
@@ -266,13 +272,6 @@ if ! validate_init "$init"; then
 			break
 		fi
 	done
-fi
-
-# Mount /usr only if init is systemd (after reading symlink)
-if [ "${checktarget##*/}" = systemd ] && read_fstab_entry /usr; then
-	log_begin_msg "Mounting /usr file system"
-	mountfs /usr
-	log_end_msg
 fi
 
 # Mount cleanup

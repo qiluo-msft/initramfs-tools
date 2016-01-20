@@ -102,15 +102,6 @@ fi
 copy_exec /sbin/fsck
 copy_exec /sbin/logsave
 
-# e2fsck may fail or warn if the system time is not yet correct, which
-# will happen if the RTC driver is modular or the RTC is set to local
-# time.  Disable this behaviour.  (No other fsck does this, apparently.)
-mkdir -p "${DESTDIR}/etc"
-cat >"${DESTDIR}/etc/e2fsck.conf" <<EOF
-[options]
-broken_system_clock=1
-EOF
-
 for type in $fsck_types; do
 	if [ "$type" = 'auto' ] ; then
 		echo "Warning: couldn't identify filesystem type for fsck hook, ignoring."

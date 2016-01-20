@@ -57,10 +57,8 @@ get_fsck_type_fstab () {
 	if [ "$1" = "$MNT_DIR" ] && [ "$MNT_PASS" != 0 ]; then
 		case "$MNT_TYPE" in
 			auto)
-				if command -v blkid >/dev/null 2>&1 ; then
-					MNT_FSNAME=$(resolve_device "$MNT_FSNAME")
-					MNT_TYPE=$(blkid -o value -s TYPE "${MNT_FSNAME}")
-				fi
+				MNT_FSNAME=$(resolve_device "$MNT_FSNAME")
+				MNT_TYPE=$(blkid -o value -s TYPE "${MNT_FSNAME}")
 				if [ -z "${MNT_TYPE}" ]; then
 					MNT_TYPE="auto"
 				fi

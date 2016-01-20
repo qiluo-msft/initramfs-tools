@@ -12,4 +12,4 @@ TODO
 
  o root loop support.
 
- o Eliminate ?klibc?, busybox (-> glibc).
+ o Eliminate klibc hook?

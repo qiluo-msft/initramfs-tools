@@ -24,7 +24,7 @@ Description: generic modular initramfs generator (automation)
 Package: initramfs-tools-core
 Architecture: all
 Multi-Arch: foreign
-Recommends: busybox (>= 1:1.01-3) | busybox-initramfs | busybox-static
+Recommends: ${busybox:Recommends}
 Depends: klibc-utils (>= 2.0.4-7~), cpio, kmod | module-init-tools, udev, ${misc:Depends}
 Suggests: bash-completion
 Breaks: initramfs-tools (<< 0.121~)

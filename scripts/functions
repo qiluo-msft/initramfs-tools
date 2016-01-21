@@ -63,7 +63,8 @@ maybe_break()
 				opts="-v"
 			fi
 			modprobe ${opts} -a i8042 atkbd ehci-pci ehci-orion \
-				 ehci-hcd uhci-hcd ohci-hcd usbhid
+				 ehci-hcd ohci-hcd ohci-pci uhci-hcd usbhid xhci \
+				 xhci-pci xhci-hcd
 		fi
 		panic "Spawning shell within the initramfs"
 		;;

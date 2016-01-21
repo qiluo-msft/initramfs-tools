@@ -406,11 +406,18 @@ dep_add_modules_mount()
 
 dep_add_modules()
 {
-	local device
+	local device dev_node
 	local modules=
 
 	dep_add_modules_mount /
 	dep_add_modules_mount /usr
+
+	if [ -n "${RESUME}" ]; then
+		dev_node="$(resolve_device "${RESUME}")"
+		if [ -n "${dev_node}" ]; then
+			block_dev_mod_add "${dev_node}"
+		fi
+	fi
 
 	# sys walk some important device classes
 	for class in gpio phy regulator rtc; do

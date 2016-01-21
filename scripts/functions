@@ -143,10 +143,8 @@ get_fstype ()
 	# but fstype is more robust
 	FSTYPE="unknown"
 	eval $(fstype "${FS}" 2> /dev/null)
-	if [ "$FSTYPE" = "unknown" ] &&  command -v blkid >/dev/null 2>&1 ; then
+	if [ "$FSTYPE" = "unknown" ]; then
 		FSTYPE=$(blkid -o value -s TYPE "${FS}")
-	elif [ "$FSTYPE" = "unknown" ] && [ -x /lib/udev/vol_id ]; then
-		FSTYPE=$(/lib/udev/vol_id -t "${FS}" 2> /dev/null)
 	fi
 	RET=$?
 
@@ -299,12 +297,7 @@ resolve_device() {
 
 	case "$DEV" in
 	LABEL=* | UUID=* | PARTLABEL=* | PARTUUID=*)
-		if command -v blkid >/dev/null 2>&1; then
-			DEV="$(blkid -l -t "$DEV" -o device)" || return 1
-		else
-			log_warning_msg "blkid not present, so cannot resolve $DEV"
-			return 1
-		fi
+		DEV="$(blkid -l -t "$DEV" -o device)" || return 1
 		;;
 	esac
 	[ -e "$DEV" ] && echo "$DEV"
@@ -313,17 +306,21 @@ resolve_device() {
 # Check a file system.
 # $1=device
 # $2=mountpoint (for diagnostics only)
+# $3=type (may be "auto")
 _checkfs_once()
 {
 	DEV="$1"
 	NAME="$2"
+	TYPE="$3"
 	if [ "$NAME" = "/" ] ; then
 		NAME="root"
 	fi
 	FSCK_LOGFILE=/run/initramfs/fsck.log
 	FSCK_STAMPFILE=/run/initramfs/fsck-${NAME#/}
 
-	TYPE=$(get_fstype "$1")
+	if [ "${TYPE}" = "auto" ]; then
+		TYPE="$(get_fstype "${DEV}")"
+	fi
 
 	FSCKCODE=0
 	if ! command -v fsck >/dev/null 2>&1; then

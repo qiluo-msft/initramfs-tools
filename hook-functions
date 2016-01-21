@@ -405,7 +405,7 @@ dep_add_modules_mount()
 	block_dev_mod_add "$dev_node"
 
 	# sys walk some important device classes
-	for class in gpio phy regulator; do
+	for class in gpio phy regulator rtc; do
 		for device in /sys/class/$class/*; do
 			device="$(readlink -f "$device")" \
 				&& sys_walk_mod_add "$device"
@@ -502,6 +502,9 @@ auto_add_modules()
 			copy_modules_dir kernel/drivers/pinctrl
 			copy_modules_dir kernel/drivers/regulator
 			copy_modules_dir kernel/drivers/usb/phy
+
+			# Needed for periodic fsck
+			copy_modules_dir kernel/drivers/rtc
 		;;
 		net)
 			copy_modules_dir kernel/drivers/net \

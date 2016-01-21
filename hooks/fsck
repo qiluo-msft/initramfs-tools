@@ -58,11 +58,9 @@ get_fsck_type_fstab () {
 		case "$MNT_TYPE" in
 			auto)
 				MNT_FSNAME=$(resolve_device "$MNT_FSNAME")
-				MNT_TYPE=$(blkid -o value -s TYPE "${MNT_FSNAME}")
-				if [ -z "${MNT_TYPE}" ]; then
-					MNT_TYPE="auto"
-				fi
-				echo "$MNT_TYPE"
+				alias fstype="/usr/lib/klibc/bin/fstype"
+				get_fstype "${MNT_FSNAME}"
+				unalias fstype
 				;;
 			*)
 				echo "$MNT_TYPE"
@@ -101,7 +99,7 @@ copy_exec /sbin/fsck
 copy_exec /sbin/logsave
 
 for type in $fsck_types; do
-	if [ "$type" = 'auto' ] ; then
+	if [ "$type" = "unknown" ] ; then
 		echo "Warning: couldn't identify filesystem type for fsck hook, ignoring."
 		continue
 	fi

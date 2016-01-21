@@ -1,0 +1,11 @@
+[Unit]
+Description=Read the initramfs-tools filesystem check log
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/bin/cat /run/initramfs/fsck.log
+ConditionPathExists=/run/initramfs/fsck.log
+
+[Install]
+WantedBy=sysinit.target

@@ -45,14 +45,6 @@ panic()
 		reboot
 		exit  # in case reboot fails, force kernel panic
 	fi
-	modprobe -v i8042 || true
-	modprobe -v atkbd || true
-	modprobe -v ehci-pci || true
-	modprobe -v ehci-orion || true
-	modprobe -v ehci-hcd || true
-	modprobe -v uhci-hcd || true
-	modprobe -v ohci-hcd || true
-	modprobe -v usbhid || true
 
 	run_scripts /scripts/panic
 
@@ -63,6 +55,23 @@ maybe_break()
 {
 	case ",$break," in
 	*,$1,*)
+		if [ "$1" = "top" ]; then
+			# udev is not yet running, so load keyboard drivers
+			if [ "${quiet}" = "y" ]; then
+				opts="-q"
+			else
+				opts="-v"
+			fi
+			modprobe ${opts} -a i8042 atkbd ehci-pci ehci-orion \
+				 ehci-hcd ohci-hcd ohci-pci uhci-hcd usbhid xhci \
+				 xhci-pci xhci-hcd
+			sleep 2
+			for modalias in /sys/bus/hid/devices/*/modalias; do
+				if [ -f "${modalias}" ]; then
+					modprobe ${opts} -b "$(cat ${modalias})"
+				fi
+			done
+		fi
 		panic "Spawning shell within the initramfs"
 		;;
 	esac

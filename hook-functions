@@ -318,7 +318,6 @@ add_loaded_modules()
 dep_add_modules_mount()
 {
 	local dir dev_node FSTYPE
-	local modules=
 
 	dir="$1"
 
@@ -400,9 +399,18 @@ dep_add_modules_mount()
 	fi
 
 	# Add filesystem
-	modules="$modules ${FSTYPE}"
+	manual_add_modules ${FSTYPE}
 
 	block_dev_mod_add "$dev_node"
+}
+
+dep_add_modules()
+{
+	local device
+	local modules=
+
+	dep_add_modules_mount /
+	dep_add_modules_mount /usr
 
 	# sys walk some important device classes
 	for class in gpio phy regulator rtc; do
@@ -460,12 +468,6 @@ dep_add_modules_mount()
 	fi
 
 	manual_add_modules $modules
-}
-
-dep_add_modules()
-{
-	dep_add_modules_mount /
-	dep_add_modules_mount /usr
 }
 
 # The modules "most" classes added per default to the initramfs

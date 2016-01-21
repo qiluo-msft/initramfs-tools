@@ -306,17 +306,21 @@ resolve_device() {
 # Check a file system.
 # $1=device
 # $2=mountpoint (for diagnostics only)
+# $3=type (may be "auto")
 _checkfs_once()
 {
 	DEV="$1"
 	NAME="$2"
+	TYPE="$3"
 	if [ "$NAME" = "/" ] ; then
 		NAME="root"
 	fi
 	FSCK_LOGFILE=/run/initramfs/fsck.log
 	FSCK_STAMPFILE=/run/initramfs/fsck-${NAME#/}
 
-	TYPE=$(get_fstype "$1")
+	if [ "${TYPE}" = "auto" ]; then
+		TYPE="$(get_fstype "${DEV}")"
+	fi
 
 	FSCKCODE=0
 	if ! command -v fsck >/dev/null 2>&1; then

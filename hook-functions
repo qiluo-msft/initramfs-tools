@@ -206,7 +206,7 @@ sys_walk_mod_add()
 		if [ -e "$driver_path" ]; then
 			module="$(basename $(readlink -f $driver_path))"
 			if [ -n "${module}" ]; then
-				force_load "${module}"
+				manual_add_modules "${module}"
 			fi
 		fi
 		device_path="$(dirname ${device_path})"
@@ -223,7 +223,7 @@ sys_walk_modalias()
 		if [ -e "${device_path}/modalias" ]; then
 			modalias=$(cat "${device_path}/modalias")
 			if [ -n "${modalias}" ]; then
-				force_load "${modalias}"
+				manual_add_modules "${modalias}"
 			fi
 		fi
 		device_path="$(dirname ${device_path})"

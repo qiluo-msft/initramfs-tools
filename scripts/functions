@@ -57,14 +57,13 @@ maybe_break()
 	*,$1,*)
 		if [ "$1" = "top" ]; then
 			# udev is not yet running, so load keyboard drivers
-			modprobe -v i8042 || true
-			modprobe -v atkbd || true
-			modprobe -v ehci-pci || true
-			modprobe -v ehci-orion || true
-			modprobe -v ehci-hcd || true
-			modprobe -v uhci-hcd || true
-			modprobe -v ohci-hcd || true
-			modprobe -v usbhid || true
+			if [ "${quiet}" = "y" ]; then
+				opts="-q"
+			else
+				opts="-v"
+			fi
+			modprobe ${opts} -a i8042 atkbd ehci-pci ehci-orion \
+				 ehci-hcd uhci-hcd ohci-hcd usbhid
 		fi
 		panic "Spawning shell within the initramfs"
 		;;

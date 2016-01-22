@@ -228,7 +228,7 @@ sys_walk_mod_add()
 		if [ -e "${device_path}/modalias" ]; then
 			modalias=$(cat "${device_path}/modalias")
 			if [ -n "${modalias}" ]; then
-				force_load "${modalias}"
+				manual_add_modules "${modalias}"
 			fi
 		fi
 
@@ -237,7 +237,7 @@ sys_walk_mod_add()
 		if [ -e "$driver_path" ]; then
 			module="$(basename $(readlink -f $driver_path))"
 			if [ -n "${module}" ]; then
-				force_load "${module}"
+				manual_add_modules "${module}"
 			fi
 		fi
 
@@ -318,7 +318,6 @@ add_loaded_modules()
 dep_add_modules_mount()
 {
 	local dir dev_node FSTYPE
-	local modules=
 
 	dir="$1"
 
@@ -400,9 +399,25 @@ dep_add_modules_mount()
 	fi
 
 	# Add filesystem
-	modules="$modules ${FSTYPE}"
+	manual_add_modules ${FSTYPE}
 
 	block_dev_mod_add "$dev_node"
+}
+
+dep_add_modules()
+{
+	local device dev_node
+	local modules=
+
+	dep_add_modules_mount /
+	dep_add_modules_mount /usr
+
+	if [ -n "${RESUME}" ]; then
+		dev_node="$(resolve_device "${RESUME}")"
+		if [ -n "${dev_node}" ]; then
+			block_dev_mod_add "${dev_node}"
+		fi
+	fi
 
 	# sys walk some important device classes
 	for class in gpio phy regulator rtc; do
@@ -460,12 +475,6 @@ dep_add_modules_mount()
 	fi
 
 	manual_add_modules $modules
-}
-
-dep_add_modules()
-{
-	dep_add_modules_mount /
-	dep_add_modules_mount /usr
 }
 
 # The modules "most" classes added per default to the initramfs

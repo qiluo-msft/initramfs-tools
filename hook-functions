@@ -134,13 +134,17 @@ copy_file() {
 	mkdir -p "${DESTDIR}/${target%/*}"
 
 	if [ -h "${src}" ]; then
-		[ "${verbose}" = "y" ] && echo "Adding ${type}-link ${src}"
-
 		# We don't need to replicate a chain of links completely;
-		# just link directly to the ultimate target.  Create a
-		# relative link so it always points to the right place.
+		# just link directly to the ultimate target
 		link_target="$(readlink -f "${src}")" || return $(($? + 1))
-		ln -rs "${DESTDIR}/${link_target}" "${DESTDIR}/${target}"
+
+		if [ "${link_target}" != "${target}" ]; then
+			[ "${verbose}" = "y" ] && echo "Adding ${type}-link ${src}"
+
+			# Create a relative link so it always points
+			# to the right place
+			ln -rs "${DESTDIR}/${link_target}" "${DESTDIR}/${target}"
+		fi
 
 		# Copy the link target if it doesn't already exist
 		src="${link_target}"

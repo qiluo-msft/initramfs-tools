@@ -280,13 +280,12 @@ allows arch specific hook additions.
 \fB\fI verbose
 corresponds to the verbosity of the update-initramfs run.
 .TP
-\fB\fI KEYMAP
-sets if a keymap needs to be added to initramfs.
+\fB\fI BUSYBOX, KEYMAP, MODULES
+are as described in \fIinitramfs.conf\fR(5).
 .TP
-\fB\fI MODULES
-specifies which kind of modules should land on initramfs.
-This setting shouldn't be overridden by hook script, but can guide them
-on how much they need to include on initramfs.
+\fB\fI BUSYBOXDIR
+is the directory where busybox utilities should be installed from, or
+empty if busybox is not being used.
 
 
 .SH BOOT SCRIPTS

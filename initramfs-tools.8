@@ -125,7 +125,7 @@ loads netconsole linux modules with the chosen args.
 loads generic IDE/ATA chipset support on boot.
 
 
-.SH HOOK SCRIPTS
+.SH SCRIPTS
 
 Valid boot and hook scripts names consist solely of alphabetics, numerics,
 dashes and underscores. Other scripts are discarded.
@@ -141,6 +141,8 @@ These are included in the initramfs image and normally executed during
 kernel boot in the early user-space before the root partition has been
 mounted.
 
+
+.SH HOOK SCRIPTS
 
 Hooks can be found in two places: /usr/share/initramfs-tools/hooks and
 /etc/initramfs-tools/hooks. They are executed during generation of the

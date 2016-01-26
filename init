@@ -13,11 +13,16 @@ mkdir -p /var/lock
 mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
 mount -t proc -o nodev,noexec,nosuid proc /proc
 
-export quiet=n
-for x in $(cat /proc/cmdline); do
-	[ "${x}" != "quiet" ] || quiet=y
-done
-[ "${quiet}" = "y" ] || echo "Loading, please wait..."
+case " $(cat /proc/cmdline) " in
+*\ quiet\ *)
+	quiet=y
+	;;
+*)
+	quiet=n
+	echo "Loading, please wait..."
+	;;
+esac
+export quiet
 
 # Note that this only becomes /dev on the real filesystem if udev's scripts
 # are used; which they will be, but it's worth pointing out

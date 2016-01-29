@@ -296,6 +296,9 @@ fi
 run_scripts /usr/share/initramfs-tools/hooks
 run_scripts "${CONFDIR}"/hooks
 
+# Avoid double sleep when using older udev scripts
+sed -i 's/^\s*sleep \$ROOTDELAY$/:/' "${DESTDIR}/scripts/init-top/udev"
+
 # cache boot run order
 for b in $(cd "${DESTDIR}/scripts" && find . -mindepth 1 -type d); do
 	cache_run_scripts "${DESTDIR}" "/scripts/${b#./}"

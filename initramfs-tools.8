@@ -559,6 +559,8 @@ Otherwise keep it alone.
 .TP
 \fB\fI ROOTDELAY, ROOTFLAGS, ROOTFSTYPE, IP
 corresponds to the rootdelay, rootflags, rootfstype or ip boot option.
+Use of ROOTDELAY is deprecated; you should implement a \fIlocal-block\fR
+boot script rather than delaying or polling.
 .TP
 \fB\fI DPKG_ARCH
 allows arch specific boot actions.

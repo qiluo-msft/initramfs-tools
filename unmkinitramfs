@@ -1,0 +1,99 @@
+#!/bin/sh
+
+set -eu
+
+usage()
+{
+	echo "Usage: $(basename "$0") [cpio options ...] < <initramfs file>"
+}
+
+# Abort if stdin is a terminal.
+#
+# Although cpio supports this, the chance of someone actually keying in a cpio
+# archive on the terminal is negligible compared to the risk of someone who
+# forgot cpio's arcane argument convention.
+if [ -t 0 ] ; then
+	echo "Error: stdin must be an initramfs" >&2
+	usage >&2
+	exit 1
+fi
+
+# Extract a compressed cpio archive
+xcpio()
+{
+	archive="$1" ; shift
+
+	if zcat -t "$archive" >/dev/null 2>&1 ; then
+		zcat "$archive" | cpio "$@"
+	elif xzcat -t "$archive" >/dev/null 2>&1 ; then
+		xzcat "$archive" | cpio "$@"
+	elif bzip2 -t "$archive" >/dev/null 2>&1 ; then
+		bzip2 -c -d "$archive" | cpio "$@"
+	elif lzop -t "$archive" >/dev/null 2>&1 ; then
+		lzop -c -d "$archive" | cpio "$@"
+	# Ignoring other data, which may be garbage at the end of the file
+	fi
+}
+
+# Read bytes out of a file, checking that they are valid hex digits
+readhex()
+{
+	dd < "$1" bs=1 skip="$2" count="$3" 2> /dev/null | \
+		LANG=C grep -E "^[0-9A-Fa-f]{$3}\$"
+}
+
+# Check for a zero byte in a file
+checkzero()
+{
+	dd < "$1" bs=1 skip="$2" count=1 2> /dev/null | \
+		LANG=C grep -q -z '^$'
+}
+
+# Split an initramfs into archives and call xcpio on each
+splitinitramfs()
+{
+	initramfs="$1" ; shift
+
+	# There may be a prepended uncompressed archive.  cpio
+	# won't tell us the true size of this so we have to
+	# parse the headers and padding ourselves.  This is
+	# very roughly based on linux/lib/earlycpio.c
+	offset=0
+	while true; do
+		if checkzero "$initramfs" $offset; then
+			offset=$((offset + 4))
+			continue
+		fi
+		magic="$(readhex "$initramfs" $offset 6)" || break
+		test $magic = 070701 || test $magic = 070702 || break
+		namesize=0x$(readhex "$initramfs" $((offset + 94)) 8)
+		filesize=0x$(readhex "$initramfs" $((offset + 54)) 8)
+		offset=$(((offset + 110)))
+		offset=$(((offset + $namesize + 3) & ~3))
+		offset=$(((offset + $filesize + 3) & ~3))
+	done
+
+	if [ $offset -ne 0 ]; then
+		# uncompressed archive
+		cpio -i "$@" < "$initramfs"
+
+		# main archive
+		subarchive=$(mktemp ${TMPDIR:-/var/tmp}/unmkinitramfs_XXXXXX)
+		trap "rm -f '$subarchive'" EXIT
+		dd < "$initramfs" bs="$offset" skip=1 2> /dev/null \
+			> $subarchive
+		xcpio "$subarchive" -i "$@"
+	else
+		xcpio "$initramfs" -i "$@"
+	fi
+}
+
+# If we can get the name of the file passed in, use it.  Otherwise, create one.
+stdin_filename=$(readlink /proc/$$/fd/0 2>/dev/null || true)
+if ! [ -r "$stdin_filename" ] ; then
+	stdin_filename=$(mktemp ${TMPDIR:-/var/tmp}/uninitramfs_stdin_XXXXXX)
+	trap "rm -f '$stdin_filename'" EXIT
+	cat > "$stdin_filename"
+fi
+
+splitinitramfs "$stdin_filename" "$@"

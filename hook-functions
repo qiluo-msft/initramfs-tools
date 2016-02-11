@@ -277,7 +277,7 @@ block_dev_mod_add()
 	dev_node="$1"
 
 	# Look up device number and convert to decimal as it appears in sysfs
-	dev_num="$(stat -c %t:%T "$dev_node")"
+	dev_num="$(stat -L -c %t:%T "$dev_node")"
 	dev_num="$((0x${dev_num%:*})):$((0x${dev_num#*:}))"
 
 	# Look up device in sysfs

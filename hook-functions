@@ -724,6 +724,7 @@ cache_run_scripts()
 	initdir=${DESTDIR}${scriptdir}
 	[ ! -d ${initdir} ] && return
 
+	> ${initdir}/ORDER
 	runlist=$(get_prereq_pairs | tsort)
 	for crs_x in ${runlist}; do
 		[ -f ${initdir}/${crs_x} ] || continue

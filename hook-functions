@@ -574,6 +574,7 @@ auto_add_modules()
 				hid-wiimote.ko hid-zydacron.ko
 
 			# Any of these might be needed by other drivers
+			copy_modules_dir kernel/drivers/bus
 			copy_modules_dir kernel/drivers/clk
 			copy_modules_dir kernel/drivers/gpio
 			copy_modules_dir kernel/drivers/phy

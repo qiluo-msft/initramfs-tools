@@ -73,11 +73,6 @@ manual_add_modules()
 
 		copy_file module "${kmod}" || continue
 
-		# Add detached signature if present
-		if [ -f "${kmod}.sig" ]; then
-			copy_file module "${kmod}.sig"
-		fi
-
 		# Add required firmware
 		for firmware in $(modinfo -k "${version}" -F firmware "${kmod}"); do
 			if [ -e "${DESTDIR}/lib/firmware/${firmware}" ] \

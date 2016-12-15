@@ -1,0 +1,107 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+. /usr/share/initramfs-tools/scripts/functions
+. /usr/share/initramfs-tools/hook-functions
+
+fstab_files()
+{
+	echo /etc/fstab
+	if [ -d /etc/fstab.d ]; then
+		ls -1 /etc/fstab.d | grep '\.fstab$' | sed -e 's;^;/etc/fstab.d/;'
+	fi
+}
+
+# Find a specific fstab entry
+# $1=mountpoint
+# $2=fstype (optional)
+_read_fstab_entry () {
+	# Not found by default.
+	echo "MNT_FSNAME="
+	echo "MNT_DIR="
+	echo "MNT_TYPE="
+
+	fstab_files | while read file; do
+		if [ -f "$file" ]; then
+			while read MNT_FSNAME MNT_DIR MNT_TYPE MNT_OPTS MNT_FREQ MNT_PASS MNT_JUNK; do
+				case "$MNT_FSNAME" in
+				  ""|\#*)
+					continue;
+					;;
+				esac
+				if [ "$MNT_DIR" = "$1" ]; then
+					if [ -n "$2" ]; then
+						[ "$MNT_TYPE" = "$2" ] || continue;
+					fi
+					echo "MNT_FSNAME=$MNT_FSNAME"
+					echo "MNT_DIR=$MNT_DIR"
+					echo "MNT_TYPE=$MNT_TYPE"
+					echo "MNT_PASS=$MNT_PASS"
+					break 2
+				fi
+				MNT_DIR=""
+			done < "$file"
+		fi
+	done
+}
+
+# Add mount and fsck for a specific fstab entry
+# $1=mountpoint
+do_mountpoint () {
+	eval "$(_read_fstab_entry "$1")"
+
+	# Not found by default.
+	if [ "$1" != "$MNT_DIR" ]; then
+		return
+	fi
+	# Ignore filesystem type for /, as it is not available and
+	# therefore never used at boot time
+	if [ "${MNT_DIR}" = "/" ] || [ "${MNT_TYPE}" = "auto" ]; then
+		MNT_FSNAME="$(resolve_device "${MNT_FSNAME}")"
+		alias fstype="/usr/lib/klibc/bin/fstype"
+		MNT_TYPE="$(get_fstype "${MNT_FSNAME}")"
+		unalias fstype
+	fi
+	if [ "$MNT_TYPE" = "unknown" ] ; then
+		echo "Warning: couldn't identify filesystem type for $1, ignoring."
+		return
+	fi
+
+	if prog="$(command -v mount.$MNT_TYPE)"; then
+		copy_exec "$prog"
+	fi
+
+	if [ "$MNT_PASS" != 0 ]; then
+		if [ -z "$copied_fsck" ]; then
+			copy_exec /sbin/fsck
+			copy_exec /sbin/logsave
+			copied_fsck=y
+		fi
+
+		if prog="$(command -v fsck.${MNT_TYPE})"; then
+			copy_exec "$prog"
+		else
+			echo "Warning: /sbin/fsck.${MNT_TYPE} doesn't exist, can't install to initramfs, ignoring."
+		fi
+	fi
+}
+
+# Always copy mount, but don't copy fsck until we know we need it
+copy_exec /bin/mount
+copied_fsck=
+
+do_mountpoint /
+do_mountpoint /usr

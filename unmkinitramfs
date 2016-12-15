@@ -72,7 +72,7 @@ splitinitramfs()
 	if [ $offset -ne 0 ]; then
 		# uncompressed archive
 		(
-			test -z "$dir" || { mkdir -p -- "$dir" && cd -- "$dir"; }
+			test -z "$dir" || { mkdir -p -- "$dir/early" && cd -- "$dir/early"; }
 			cpio -i "$@"
 		) < "$initramfs"
 
@@ -81,7 +81,7 @@ splitinitramfs()
 		trap "rm -f '$subarchive'" EXIT
 		dd < "$initramfs" bs="$offset" skip=1 2> /dev/null \
 			> $subarchive
-		xcpio "$subarchive" "$dir" -i "$@"
+		xcpio "$subarchive" "$dir/main" -i "$@"
 	else
 		xcpio "$initramfs" "$dir" -i "$@"
 	fi

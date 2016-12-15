@@ -12,7 +12,7 @@ if [ "$#" -eq 0 ] ; then
 	exit 1
 fi
 
-cpio_args="--quiet --list"
+umi_opts="--list"
 
 OPTIONS=`getopt -o hl --long help,long -n "$0" -- "$@"`
 # Check for non-GNU getopt
@@ -27,7 +27,7 @@ while true; do
 		exit 0
 	;;
 	-l|--long)
-		cpio_args="${cpio_args:+${cpio_args} --verbose}"
+		umi_opts="${umi_opts:+${umi_opts} --verbose}"
 		shift
 	;;
 	--)
@@ -41,5 +41,5 @@ while true; do
 done
 
 for initramfs in "$@" ; do
-	unmkinitramfs $cpio_args < "$initramfs"
+	unmkinitramfs $umi_opts -- "$initramfs"
 done

@@ -4,35 +4,29 @@ set -eu
 
 usage()
 {
-	echo "Usage: $(basename "$0") [cpio options ...] < <initramfs file>"
+	echo "Usage: $(basename "$0") [-v] <initramfs file> <directory>"
 }
-
-# Abort if stdin is a terminal.
-#
-# Although cpio supports this, the chance of someone actually keying in a cpio
-# archive on the terminal is negligible compared to the risk of someone who
-# forgot cpio's arcane argument convention.
-if [ -t 0 ] ; then
-	echo "Error: stdin must be an initramfs" >&2
-	usage >&2
-	exit 1
-fi
 
 # Extract a compressed cpio archive
 xcpio()
 {
-	archive="$1" ; shift
+	archive="$1"
+	dir="$2"
+	shift 2
 
 	if zcat -t "$archive" >/dev/null 2>&1 ; then
-		zcat "$archive" | cpio "$@"
+		zcat "$archive"
 	elif xzcat -t "$archive" >/dev/null 2>&1 ; then
-		xzcat "$archive" | cpio "$@"
+		xzcat "$archive"
 	elif bzip2 -t "$archive" >/dev/null 2>&1 ; then
-		bzip2 -c -d "$archive" | cpio "$@"
+		bzip2 -c -d "$archive"
 	elif lzop -t "$archive" >/dev/null 2>&1 ; then
-		lzop -c -d "$archive" | cpio "$@"
+		lzop -c -d "$archive"
 	# Ignoring other data, which may be garbage at the end of the file
-	fi
+	fi | (
+		test -z "$dir" || { mkdir -p -- "$dir" && cd -- "$dir"; }
+		cpio "$@"
+	)
 }
 
 # Read bytes out of a file, checking that they are valid hex digits
@@ -52,7 +46,9 @@ checkzero()
 # Split an initramfs into archives and call xcpio on each
 splitinitramfs()
 {
-	initramfs="$1" ; shift
+	initramfs="$1"
+	dir="$2"
+	shift 2
 
 	# There may be a prepended uncompressed archive.  cpio
 	# won't tell us the true size of this so we have to
@@ -75,25 +71,59 @@ splitinitramfs()
 
 	if [ $offset -ne 0 ]; then
 		# uncompressed archive
-		cpio -i "$@" < "$initramfs"
+		(
+			test -z "$dir" || { mkdir -p -- "$dir" && cd -- "$dir"; }
+			cpio -i "$@"
+		) < "$initramfs"
 
 		# main archive
 		subarchive=$(mktemp ${TMPDIR:-/var/tmp}/unmkinitramfs_XXXXXX)
 		trap "rm -f '$subarchive'" EXIT
 		dd < "$initramfs" bs="$offset" skip=1 2> /dev/null \
 			> $subarchive
-		xcpio "$subarchive" -i "$@"
+		xcpio "$subarchive" "$dir" -i "$@"
 	else
-		xcpio "$initramfs" -i "$@"
+		xcpio "$initramfs" "$dir" -i "$@"
 	fi
 }
 
-# If we can get the name of the file passed in, use it.  Otherwise, create one.
-stdin_filename=$(readlink /proc/$$/fd/0 2>/dev/null || true)
-if ! [ -r "$stdin_filename" ] ; then
-	stdin_filename=$(mktemp ${TMPDIR:-/var/tmp}/uninitramfs_stdin_XXXXXX)
-	trap "rm -f '$stdin_filename'" EXIT
-	cat > "$stdin_filename"
+OPTIONS=`getopt -o hv --long help,list,verbose -n "$0" -- "$@"`
+# Check for non-GNU getopt
+if [ $? != 0 ] ; then echo "W: non-GNU getopt" >&2 ; exit 1 ; fi
+
+cpio_opts="--preserve-modification-time --no-absolute-filenames --quiet"
+expected_args=2
+eval set -- "$OPTIONS"
+
+while true; do
+	case "$1" in
+        -h|--help)
+		usage
+		exit 0
+	;;
+	--list)
+		# For lsinitramfs
+		cpio_opts="${cpio_opts:+${cpio_opts} --list}"
+		expected_args=1
+		shift
+	;;
+	-v|--verbose)
+		cpio_opts="${cpio_opts:+${cpio_opts} --verbose}"
+		shift
+	;;
+	--)
+		shift
+		break
+	;;
+	*)
+		echo "Internal error!" >&2
+		exit 1
+	esac
+done
+
+if [ $# -ne $expected_args ]; then
+	usage
+	exit 2
 fi
 
-splitinitramfs "$stdin_filename" "$@"
+splitinitramfs "$1" "${2:-}" $cpio_opts

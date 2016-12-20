@@ -81,7 +81,7 @@ splitinitramfs()
 		trap "rm -f '$subarchive'" EXIT
 		dd < "$initramfs" bs="$offset" skip=1 2> /dev/null \
 			> $subarchive
-		xcpio "$subarchive" "$dir/main" -i "$@"
+		xcpio "$subarchive" "${dir:+$dir/main}" -i "$@"
 	else
 		xcpio "$initramfs" "$dir" -i "$@"
 	fi

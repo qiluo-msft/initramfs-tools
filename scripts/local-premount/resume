@@ -15,7 +15,7 @@ prereqs)
 	;;
 esac
 
-if [ -z "${resume}" ]; then
+if [ -z "${resume}" ] || [ ! -e /sys/power/resume ]; then
 	exit 0
 fi
 
@@ -52,8 +52,6 @@ UUID=*)
 esac
 
 [ ! -e "${resume}" ] && exit 0
-
-[ ! -e /sys/power/resume ] && exit 0
 
 # hardcode path, uswsusp ships an resume binary too
 if [ -n "${resume_offset}" ]; then

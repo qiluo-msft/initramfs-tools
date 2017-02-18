@@ -71,7 +71,7 @@ local_device_setup()
 	# there are devices stacked on top of those.
 	if ! real_dev=$(resolve_device "${dev_id}") ||
 	   ! get_fstype "${real_dev}" >/dev/null; then
-		log_begin_msg "Waiting for ${name} file system"
+		log_begin_msg "Waiting for ${name}"
 
 		# Timeout is max(30, rootdelay) seconds (approximately)
 		slumber=30
@@ -115,7 +115,7 @@ local_device_setup()
 local_mount_root()
 {
 	local_top
-	local_device_setup "${ROOT}" root
+	local_device_setup "${ROOT}" "root file system"
 	ROOT="${DEV}"
 
 	# Get the root filesystem type if not set
@@ -151,7 +151,7 @@ local_mount_fs()
 {
 	read_fstab_entry "$1"
 
-	local_device_setup "$MNT_FSNAME" "$1"
+	local_device_setup "$MNT_FSNAME" "$1 file system"
 	MNT_FSNAME="${DEV}"
 
 	local_premount

@@ -49,11 +49,13 @@ local_bottom()
 
 # $1=device ID to mount
 # $2=optionname (for root and etc)
+# $3=panic if device is missing (true or false, default: true)
 # Sets $DEV to the resolved device node
 local_device_setup()
 {
 	local dev_id="$1"
 	local name="$2"
+	local may_panic="${3:-true}"
 	local real_dev
 	local time_elapsed
 	local count
@@ -133,6 +135,10 @@ local_device_setup()
 	# We've given up, but we'll let the user fix matters if they can
 	while ! real_dev=$(resolve_device "${dev_id}") ||
 	      ! get_fstype "${real_dev}" >/dev/null; do
+		if ! $may_panic; then
+			echo "Gave up waiting for ${name}"
+			return 1
+		fi
 		echo "Gave up waiting for ${name} device.  Common problems:"
 		echo " - Boot args (cat /proc/cmdline)"
 		echo "   - Check rootdelay= (did the system wait long enough?)"

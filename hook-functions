@@ -381,7 +381,7 @@ dep_add_modules_mount()
 		|| ! [ -b "$dev_node" ]; then
 		echo "mkinitramfs: failed to determine device for $dir" >&2
 		echo "mkinitramfs: workaround is MODULES=most, check:" >&2
-		echo "grep -r MODULES /etc/initramfs-tools/" >&2
+		echo "grep -r MODULES ${CONFDIR}" >&2
 		echo "" >&2
 		echo "Error please report bug on initramfs-tools" >&2
 		echo "Include the output of 'mount' and 'cat /proc/mounts'" >&2

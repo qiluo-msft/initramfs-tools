@@ -13,15 +13,21 @@ mkdir -p /var/lock
 mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
 mount -t proc -o nodev,noexec,nosuid proc /proc
 
-case " $(cat /proc/cmdline) " in
-*\ quiet\ *)
-	quiet=y
-	;;
-*)
+for x in $(cat /proc/cmdline); do
+	case $x in
+	initramfs.clear)
+		clear
+		;;
+	quiet)
+		quiet=y
+		;;
+	esac
+done
+
+if [ "$quiet" != "y" ]; then
 	quiet=n
 	echo "Loading, please wait..."
-	;;
-esac
+fi
 export quiet
 
 # Note that this only becomes /dev on the real filesystem if udev's scripts

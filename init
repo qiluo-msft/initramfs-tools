@@ -13,6 +13,10 @@ mkdir -p /var/lock
 mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
 mount -t proc -o nodev,noexec,nosuid proc /proc
 
+if grep -qw clear /proc/cmdline; then
+	clear
+fi
+
 case " $(cat /proc/cmdline) " in
 *\ quiet\ *)
 	quiet=y

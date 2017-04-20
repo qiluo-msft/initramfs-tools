@@ -22,20 +22,17 @@ if [ -n "$RESUME" ] && blkid -p -n swap $RESUME >/dev/null 2>&1; then
 fi
 
 # We need to be able to read the listed swap partitions
-if [ ! -r /proc/swaps ]; then
+if ischroot || [ ! -r /proc/swaps ]; then
 	exit 0
 fi
 
 # Try to autodetect the RESUME partition, using biggest swap?
+# Write detected resume to intramfs conf.d
 RESUME=$(grep ^/dev/ /proc/swaps | sort -rnk3 | head -n 1 | cut -d " " -f 1)
 if [ -n "$RESUME" ]; then
 	UUID=$(blkid -s UUID -o value "$RESUME" || true)
 	if [ -n "$UUID" ]; then
 			RESUME="UUID=$UUID"
 	fi
-fi
-
-# Write detected resume to intramfs conf.d if not in a chroot
-if [ -n "${RESUME}" ] && ! ischroot; then
 	echo "RESUME=${RESUME}" > ${DESTDIR}/conf/conf.d/zz-resume-auto
 fi

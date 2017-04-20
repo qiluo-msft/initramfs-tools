@@ -74,6 +74,14 @@ Allows one to use an nfs drive as the root of the drive.
 The default is to boot from \fIlocal\fP media (hard drive, USB stick).
 Set to \fInfs\fP for an NFS root share.
 
+.SH VARIABLES FOR LOCAL BOOT
+.TP
+\fB RESUME
+Specifies the device used for suspend-to-disk (hibernation), which the
+initramfs code should attempt to resume from.  If this is not defined,
+.B mkinitramfs
+will automatically select the largest available swap partition.
+
 .SH VARIABLES FOR NFS BOOT
 .TP
 \fB DEVICE

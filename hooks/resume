@@ -16,8 +16,6 @@ prereqs)
 esac
 
 # First check if a location is set and is a valid swap partition
-test -r /etc/initramfs-tools/conf.d/resume \
-	&& . /etc/initramfs-tools/conf.d/resume
 if [ -n "$RESUME" ] && blkid -p -n swap $RESUME >/dev/null 2>&1; then
 	# As mkinitramfs copies the config file nothing to do.
 	exit 0
@@ -37,7 +35,7 @@ if [ -n "$RESUME" ]; then
 	fi
 fi
 
-# Write detected resume to intramfs conf.d/resume if not in a chroot
+# Write detected resume to intramfs conf.d if not in a chroot
 if [ -n "${RESUME}" ] && ! ischroot; then
-	echo "RESUME=${RESUME}" > ${DESTDIR}/conf/conf.d/resume
+	echo "RESUME=${RESUME}" > ${DESTDIR}/conf/conf.d/zz-resume-auto
 fi

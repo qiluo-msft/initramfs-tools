@@ -16,7 +16,8 @@ prereqs)
 esac
 
 # First check if a location is set and is a valid swap partition
-if [ -n "$RESUME" ] && blkid -p -n swap $RESUME >/dev/null 2>&1; then
+if [ -n "$RESUME" ] && \
+   { [ "$RESUME" = none ] || blkid -p -n swap $RESUME >/dev/null 2>&1; }; then
 	# As mkinitramfs copies the config file nothing to do.
 	exit 0
 fi

@@ -29,7 +29,7 @@ if [ ! -r /proc/swaps ]; then
 fi
 
 # Try to autodetect the RESUME partition, using biggest swap?
-RESUME=$(grep ^/dev/ /proc/swaps | sort -rk3 | head -n 1 | cut -d " " -f 1)
+RESUME=$(grep ^/dev/ /proc/swaps | sort -rnk3 | head -n 1 | cut -d " " -f 1)
 if [ -n "$RESUME" ]; then
 	UUID=$(blkid -s UUID -o value "$RESUME" || true)
 	if [ -n "$UUID" ]; then

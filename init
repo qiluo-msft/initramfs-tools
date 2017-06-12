@@ -87,7 +87,7 @@ for x in $(cat /proc/cmdline); do
 		if [ -z "${BOOT}" ] && [ "$ROOT" = "/dev/nfs" ]; then
 			BOOT=nfs
 		fi
-                ;;
+		;;
 	rootflags=*)
 		ROOTFLAGS="-o ${x#rootflags=}"
 		;;
@@ -117,7 +117,7 @@ for x in $(cat /proc/cmdline); do
 	resume=*)
 		RESUME="${x#resume=}"
 		case $RESUME in
-	        UUID=*)
+		UUID=*)
 			RESUME="/dev/disk/by-uuid/${RESUME#UUID=}"
 		esac
 		;;

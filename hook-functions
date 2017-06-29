@@ -513,6 +513,10 @@ auto_add_modules()
 			copy_modules_dir kernel/drivers/usb/renesas_usbhs
 			# and any extcon drivers for USB
 			modules="$modules extcon-usb-gpio"
+			# Add the axp20x_usb_power power supply driver,
+			# required to initialize the USB host controllers
+			# on a number of armhf systems
+			modules="$modules axp20x_usb_power"
 
 			# Include all HID drivers unless we're sure they
 			# don't support keyboards.  hid-*ff covers various

@@ -49,6 +49,7 @@ export ROOTDELAY=
 export ROOTFLAGS=
 export ROOTFSTYPE=
 export IP=
+export DEVICE=
 export BOOT=
 export BOOTIF=
 export UBIMTD=
@@ -300,6 +301,7 @@ unset ROOT
 unset IP
 unset BOOT
 unset BOOTIF
+unset DEVICE
 unset UBIMTD
 unset blacklist
 unset break

@@ -66,16 +66,13 @@ done
 . "${CONFDIR}/initramfs.conf"
 EXTRA_CONF=''
 for i in ${CONFDIR}/conf.d/*; do
-	if [ -e "${i}" ] && \
-	   [ -n "$(basename "${i}" \
+	if [ -z "$(basename "${i}" \
 		| grep '^[[:alnum:]][[:alnum:]\._-]*$' | grep -v '\.dpkg-.*$')" ]; then
-		EXTRA_CONF="${EXTRA_CONF} ${i}"
-	fi
-done
-for i in ${EXTRA_CONF}; do
-	if [ -d ${i} ]; then
+		:
+	elif [ -d ${i} ]; then
 		echo "Warning: ${i} is a directory instead of file, ignoring."
-	else
+	elif [ -e ${i} ]; then
+		EXTRA_CONF="${EXTRA_CONF} ${i}"
 		. ${i}
 	fi
 done

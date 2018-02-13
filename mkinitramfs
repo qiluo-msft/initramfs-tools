@@ -66,14 +66,17 @@ done
 . "${CONFDIR}/initramfs.conf"
 EXTRA_CONF=''
 for i in ${CONFDIR}/conf.d/*; do
-	[ -e $i ] && EXTRA_CONF="${EXTRA_CONF} $(basename $i \
-		| grep '^[[:alnum:]][[:alnum:]\._-]*$' | grep -v '\.dpkg-.*$')";
+	if [ -e "${i}" ] && \
+	   [ -n "$(basename "${i}" \
+		| grep '^[[:alnum:]][[:alnum:]\._-]*$' | grep -v '\.dpkg-.*$')" ]; then
+		EXTRA_CONF="${EXTRA_CONF} ${i}"
+	fi
 done
 for i in ${EXTRA_CONF}; do
-	if [ -d  ${CONFDIR}/conf.d/${i} ]; then
-		echo "Warning: ${CONFDIR}/conf.d/${i} is a directory instead of file, ignoring."
+	if [ -d ${i} ]; then
+		echo "Warning: ${i} is a directory instead of file, ignoring."
 	else
-		. ${CONFDIR}/conf.d/${i}
+		. ${i}
 	fi
 done
 
@@ -274,7 +277,7 @@ done
 echo "DPKG_ARCH=${DPKG_ARCH}" > ${DESTDIR}/conf/arch.conf
 cp -p "${CONFDIR}/initramfs.conf" ${DESTDIR}/conf
 for i in ${EXTRA_CONF}; do
-	copy_file config "${CONFDIR}/conf.d/${i}" /conf/conf.d
+	copy_file config ${i} /conf/conf.d
 done
 
 # ROOT hardcoding

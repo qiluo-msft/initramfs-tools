@@ -69,8 +69,6 @@ for i in /usr/share/initramfs-tools/conf.d/* ${CONFDIR}/conf.d/*; do
 	[ -e $i ] && EXTRA_CONF="${EXTRA_CONF} $(basename $i \
 		| grep '^[[:alnum:]][[:alnum:]\._-]*$' | grep -v '\.dpkg-.*$')";
 done
-# FIXME: deprecated those settings on mkinitramfs run
-# 	 these conf dirs are for boot scripts and land on initramfs
 for i in ${EXTRA_CONF}; do
 	if [ -d  ${CONFDIR}/conf.d/${i} ]; then
 		echo "Warning: ${CONFDIR}/conf.d/${i} is a directory instead of file, ignoring."

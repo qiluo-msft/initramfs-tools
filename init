@@ -71,7 +71,7 @@ export fsckfix=
 # Bring in the main config
 . /conf/initramfs.conf
 for conf in conf/conf.d/*; do
-	[ -f ${conf} ] && . ${conf}
+	[ -f "${conf}" ] && . "${conf}"
 done
 . /scripts/functions
 
@@ -228,7 +228,7 @@ log_begin_msg "Mounting root file system"
 . /scripts/local
 . /scripts/nfs
 . /scripts/${BOOT}
-parse_numeric ${ROOT}
+parse_numeric "${ROOT}"
 maybe_break mountroot
 mount_top
 mount_premount
@@ -309,6 +309,6 @@ mount -n -o move /sys ${rootmnt}/sys
 mount -n -o move /proc ${rootmnt}/proc
 
 # Chain to real filesystem
-exec run-init ${drop_caps} ${rootmnt} ${init} "$@" <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
+exec run-init ${drop_caps} "${rootmnt}" "${init}" "$@" <${rootmnt}/dev/console >${rootmnt}/dev/console 2>&1
 echo "Something went badly wrong in the initramfs."
 panic "Please file a bug on initramfs-tools."

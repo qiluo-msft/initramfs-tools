@@ -89,6 +89,13 @@ mounts the rootfs read-only.
 mounts the rootfs read-write.
 
 .TP
+\fB\fI ramsize
+The size of the /run mount point in bytes, and rounded up to entire pages.
+This option accepts a suffix % to limit the instance to that percentage of
+your physical RAM or a suffix k, m or g for Ki, Mi, Gi (binary kilo (kibi),
+binary mega (mebi) and binary giga (gibi)). The default is 10%.
+
+.TP
 \fB\fI blacklist
 disables load of specific modules.
 Use blacklist=module1,module2,module3 bootparameter.

@@ -33,8 +33,6 @@ export quiet
 mount -t devtmpfs -o nosuid,mode=0755 udev /dev
 mkdir /dev/pts
 mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts || true
-mount -t tmpfs -o "noexec,nosuid,size=10%,mode=0755" tmpfs /run
-mkdir -m 0755 /run/initramfs
 
 # Export the dpkg architecture
 export DPKG_ARCH=
@@ -101,6 +99,9 @@ for x in $(cat /proc/cmdline); do
 			;;
 		esac
 		;;
+	runsize=*)
+		RUNSIZE="${x#runsize=}"
+		;;
 	nfsroot=*)
 		NFSROOT="${x#nfsroot=}"
 		;;
@@ -147,9 +148,9 @@ for x in $(cat /proc/cmdline); do
 		debug=y
 		quiet=n
 		if [ -n "${netconsole}" ]; then
-			exec >/dev/kmsg 2>&1
+			log_output=/dev/kmsg
 		else
-			exec >/run/initramfs/initramfs.debug 2>&1
+			log_output=/run/initramfs/initramfs.debug
 		fi
 		set -x
 		;;
@@ -169,7 +170,7 @@ for x in $(cat /proc/cmdline); do
 		;;
 	netconsole=*)
 		netconsole=${x#netconsole=}
-		[ "x$debug" = "xy" ] && exec >/dev/kmsg 2>&1
+		[ "x$debug" = "xy" ] && log_output=/dev/kmsg
 		;;
 	BOOTIF=*)
 		BOOTIF=${x#BOOTIF=}
@@ -199,6 +200,14 @@ if [ -n "${noresume}" ] || [ "$RESUME" = none ]; then
 	unset resume
 else
 	resume=${RESUME:-}
+fi
+
+mount -t tmpfs -o "noexec,nosuid,size=${RUNSIZE:-10%},mode=0755" tmpfs /run
+mkdir -m 0755 /run/initramfs
+
+if [ -n "$log_output" ]; then
+	exec >$log_output 2>&1
+	unset log_output
 fi
 
 maybe_break top

@@ -93,6 +93,14 @@ mounts the rootfs read-only.
 mounts the rootfs read-write.
 
 .TP
+\fB\fI runsize
+The size of the \fI/run\fP tmpfs mount point in bytes (suffixes are supported)
+or as percentage of your physical RAM. This parameter is used as the value of
+the size mount option to tmpfs. See
+\fBhttps://www.kernel.org/doc/Documentation/filesystems/tmpfs.txt\fR for
+details. The default is 10%.
+
+.TP
 \fB\fI blacklist
 disables load of specific modules.
 Use blacklist=module1,module2,module3 bootparameter.

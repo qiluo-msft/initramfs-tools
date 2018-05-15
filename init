@@ -44,6 +44,7 @@ export DPKG_ARCH=
 export MODPROBE_OPTIONS="-qb"
 
 # Export relevant variables
+export NFSROOT=
 export ROOT=
 export ROOTDELAY=
 export ROOTFLAGS=
@@ -282,6 +283,7 @@ maybe_break init
 unset debug
 unset MODPROBE_OPTIONS
 unset DPKG_ARCH
+unset NFSROOT
 unset ROOTFLAGS
 unset ROOTFSTYPE
 unset ROOTDELAY

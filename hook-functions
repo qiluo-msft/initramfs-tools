@@ -381,7 +381,7 @@ dep_add_modules_mount()
 		|| ! [ -b "$dev_node" ]; then
 		echo "mkinitramfs: failed to determine device for $dir" >&2
 		echo "mkinitramfs: workaround is MODULES=most, check:" >&2
-		echo "grep -r MODULES /etc/initramfs-tools/" >&2
+		echo "grep -r MODULES ${CONFDIR}" >&2
 		echo "" >&2
 		echo "Error please report bug on initramfs-tools" >&2
 		echo "Include the output of 'mount' and 'cat /proc/mounts'" >&2
@@ -604,7 +604,9 @@ hidden_dep_add_modules()
 	local modules=
 	for dep in "lib/libcrc32c crc32c" \
 			"fs/ubifs/ubifs deflate zlib lzo" \
-			"fs/btrfs/btrfs crc32c"; do
+			"fs/btrfs/btrfs crc32c" \
+			"drivers/net/ethernet/mellanox/mlx4/mlx4_core mlx4_ib" \
+			"drivers/net/ethernet/mellanox/mlx5/core/mlx5_core mlx5_ib"; do
 		set -- $dep
 		if [ -f "${DESTDIR}/lib/modules/${version}/kernel/$1.ko" ]; then
 			shift

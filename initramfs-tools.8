@@ -24,6 +24,18 @@ mount the partition with that UUID as the root filesystem.
 the binary to hand over execution to on the root fs after the initramfs scripts are done.
 
 .TP
+\fB\fI initramfs.clear
+clear screen at the beginning
+
+.TP
+\fB\fI initramfs.runsize
+The size of the \fI/run\fP tmpfs mount point in bytes (suffixes are supported)
+or as percentage of your physical RAM. This parameter is used as the value of
+the size mount option to tmpfs. See
+\fBhttps://www.kernel.org/doc/Documentation/filesystems/tmpfs.txt\fR for
+details. The default is 10%.
+
+.TP
 \fB\fI root= "<path to blockdevice>"
 the device node to mount as the root file system.
 The recommended usage is to specify the UUID as followed "root=UUID=xxx".

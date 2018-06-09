@@ -46,8 +46,12 @@ else
 	# Try to autodetect the RESUME partition, using biggest swap?
 	resume_auto=$(grep ^/dev/ /proc/swaps | sort -rnk3 | head -n 1 | cut -d " " -f 1)
 	dm_name="$(dmsetup info -c --noheadings -o name "$resume_auto" 2>/dev/null)"
-	if grep -q "$dm_name .* /dev/urandom " /etc/crypttab; then
-		resume_auto=
+	if [ -e /etc/crypttab ]; then
+		while read cryptdev srcdev keyfile junk; do
+			if [ "$cryptdev" = "$dm_name" ] && [ "$keyfile" = /dev/urandom ]; then
+				resume_auto=
+			fi
+		done < /etc/crypttab
 	fi
 	if [ -n "$resume_auto" ]; then
 		if [ -n "$dm_name" ]; then

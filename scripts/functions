@@ -463,3 +463,19 @@ mount_bottom()
 {
 	:
 }
+
+# Load /usr/bin/gettext.sh if available, provide dummy functions eval_gettext()
+# and eval_ngettext() otherwise.
+gettext_support()
+{
+	if [ -f "/usr/bin/gettext.sh" ]; then
+		. /usr/bin/gettext.sh
+	else
+		eval_gettext() {
+			echo "$1"
+		}
+		eval_ngettext() {
+			echo "$1"
+		}
+	fi
+}

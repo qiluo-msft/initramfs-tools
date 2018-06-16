@@ -1,0 +1,47 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+# Hook to load locales and gettext into initramfs if requested by LOCALES=y
+if [ "$LOCALES" != "y" ] && [ "$LOCALES" != "Y" ]; then
+	exit 0
+fi
+
+if [ ! -x /usr/bin/locale ]; then
+	echo "locale is missing. Please install the 'locales' package."
+	exit 0
+fi
+
+. /usr/share/initramfs-tools/hook-functions
+
+# Copy binaries required for gettext support
+copy_exec /usr/bin/envsubst
+copy_exec /usr/bin/gettext
+copy_exec /usr/bin/gettext.sh
+copy_exec /usr/bin/ngettext
+
+# Copy locale files except LC_COLLATE. It's not needed for localized string
+# support and usually is by far the biggest locale file.
+for file in $(find /usr/lib/locale -type f \! -name LC_COLLATE 2>/dev/null); do
+	copy_file locale_file $file
+done
+
+# Write locale variables to initramfs conf.d
+for line in $(locale); do
+	if [ "${line#LC_COLLATE}" = "$line" ]; then
+		echo "export $line" >>${DESTDIR}/conf/conf.d/locales
+	fi
+done

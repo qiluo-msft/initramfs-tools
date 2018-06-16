@@ -424,6 +424,17 @@ user to investigate the situation.
 panic "Frobnication failed"
 .RE
 
+.TP
+\fB\fI
+gettext_support
+Either loads /usr/bin/gettext.sh (if available) or provides dummy functions
+eval_gettext() and eval_ngettext() functions otherwise.
+.RS
+.PP
+.B Example:
+gettext_support
+.RE
+
 .SS Subdirectories
 Both /usr/share/initramfs-tools/scripts and /etc/initramfs-tools/scripts
 contains the following subdirectories.

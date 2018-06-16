@@ -203,6 +203,7 @@ export DESTDIR
 export DPKG_ARCH
 export verbose
 export KEYMAP
+export LOCALES
 export MODULES
 export BUSYBOX
 export RESUME

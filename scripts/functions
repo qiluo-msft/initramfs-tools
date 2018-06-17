@@ -472,10 +472,10 @@ gettext_support()
 		. /usr/bin/gettext.sh
 	else
 		eval_gettext() {
-			echo "$1"
+			eval echo "$1"
 		}
 		eval_ngettext() {
-			echo "$1"
+			eval echo "$1"
 		}
 	fi
 }

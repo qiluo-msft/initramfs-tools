@@ -211,7 +211,6 @@ any stale remote branches locally by executing:
 * [bugreports](https://bugs.debian.org/cgi-bin/pkgreport.cgi?src=initramfs-tools;dist=unstable)
 * [initramfs-tools @ tracker](https://tracker.debian.org/pkg/initramfs-tools)
 * [popcon graph](http://qa.debian.org/popcon.php?package=initramfs-tools)
-* [bugcount for initramfs-tools](http://people.debian.org/~glandium/bts/i/initramfs-tools.png)
 * [bugreports @ ubuntu](https://launchpad.net/ubuntu/+source/initramfs-tools)
 * [qa page @ ubuntu](http://status.qa.ubuntu.com/qapkgstatus/initramfs-tools)
 

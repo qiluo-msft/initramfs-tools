@@ -40,7 +40,7 @@ or online at [salsa.debian.org](https://salsa.debian.org/kernel-team/initramfs-t
 
 ## <a name="preparations">2. Preparations</a>
 
-1. Install required software (notice: git is named git-core on Debian/oldstable):
+1. Install required software:
 
         # apt-get install git git-buildpackage dpkg-dev
 

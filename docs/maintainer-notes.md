@@ -23,7 +23,7 @@
 
 **NOTE:** The most recent version of this document is available at
 docs/maintainer-notes.html in the [the git repository](#checkout)
-or online at [git.debian.org](http://git.debian.org/?p=kernel/initramfs-tools.git;a=blob_plain;f=docs/maintainer-notes.html;hb=HEAD).
+or online at [salsa.debian.org](https://salsa.debian.org/kernel-team/initramfs-tools/blob/master/docs/maintainer-notes.md).
 
 ***
 
@@ -31,7 +31,7 @@ or online at [git.debian.org](http://git.debian.org/?p=kernel/initramfs-tools.gi
 
 <table>
 	<tr><td><code><b>$mailaddress:</b></code></td><td>mailaddress of the user</td></tr>
-	<tr><td><code><b>$username:</b></code></td><td>name of the alioth account</td></tr>
+	<tr><td><code><b>$username:</b></code></td><td>name of the Salsa account</td></tr>
 	<tr><td><code><b>$version:</b></code></td><td>version string</td></tr>
 	<tr><td><code><b>$yourname:</b></code></td><td>your fullname</td></tr>
 </table>
@@ -56,12 +56,12 @@ or online at [git.debian.org](http://git.debian.org/?p=kernel/initramfs-tools.gi
 
 1. <a name="checkout">Checkout repository (anonymous):</a>
 
-        % git clone git://git.debian.org/git/kernel/initramfs-tools.git
+        % git clone https://salsa.debian.org/kernel-team/initramfs-tools.git
         % cd initramfs-tools
 
 1. Checkout repository (with developer access):
 
-        % git clone ssh://$username@git.debian.org/git/kernel/initramfs-tools.git
+        % git clone ssh://git@salsa.debian.org/kernel-team/initramfs-tools.git
         % cd initramfs-tools
 
 ***
@@ -85,7 +85,7 @@ or online at [git.debian.org](http://git.debian.org/?p=kernel/initramfs-tools.gi
    this information for generating the changelog using the --meta option later
    on.
 
-1. Finally push your branch to alioth:
+1. Finally push your branch to Salsa:
 
         % git push origin $username/short-descr-of-new-feature
 
@@ -206,7 +206,7 @@ any stale remote branches locally by executing:
 
 ## <a name="resources">6. Resources</a>
 
-* [initramfs-tools git web interface](http://git.debian.org/?p=kernel/initramfs-tools.git)
+* [initramfs-tools git web interface](https://salsa.debian.org/kernel-team/initramfs-tools)
 * [initramfs @ debian-wiki](http://wiki.debian.org/initramfs)
 * [bugreports](http://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=initramfs-tools;dist=unstable)
 * [initramfs-tools @ PTS](http://packages.qa.debian.org/i/initramfs-tools.html)

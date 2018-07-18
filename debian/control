@@ -25,7 +25,7 @@ Package: initramfs-tools-core
 Architecture: all
 Multi-Arch: foreign
 Recommends: ${busybox:Recommends}
-Depends: klibc-utils (>= 2.0.4-8~), cpio, kmod | module-init-tools, udev, coreutils (>= 8.24), ${misc:Depends}
+Depends: klibc-utils (>= 2.0.4-8~), cpio, kmod | module-init-tools, udev, coreutils (>= 8.24), e2fsprogs, ${misc:Depends}
 Suggests: bash-completion
 Breaks: initramfs-tools (<< 0.121~), ${busybox:Breaks}
 Replaces: initramfs-tools (<< 0.121~)

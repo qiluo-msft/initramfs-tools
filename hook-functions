@@ -630,6 +630,9 @@ hidden_dep_add_modules()
 			mlx5_core)
 				echo mlx5_ib
 				;;
+			i8042)
+				echo psmouse
+				;;
 			esac
 		done
 		)

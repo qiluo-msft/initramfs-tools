@@ -209,7 +209,7 @@ any stale remote branches locally by executing:
 * [initramfs-tools git web interface](https://salsa.debian.org/kernel-team/initramfs-tools)
 * [initramfs @ debian-wiki](http://wiki.debian.org/initramfs)
 * [bugreports](https://bugs.debian.org/cgi-bin/pkgreport.cgi?src=initramfs-tools;dist=unstable)
-* [initramfs-tools @ PTS](http://packages.qa.debian.org/i/initramfs-tools.html)
+* [initramfs-tools @ tracker](https://tracker.debian.org/pkg/initramfs-tools)
 * [popcon graph](http://qa.debian.org/popcon.php?package=initramfs-tools)
 * [bugcount for initramfs-tools](http://people.debian.org/~glandium/bts/i/initramfs-tools.png)
 * [bugreports @ ubuntu](https://launchpad.net/ubuntu/+source/initramfs-tools)

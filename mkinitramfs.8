@@ -105,6 +105,12 @@ should not be mounted with the
 .B noexec
 mount option.
 
+If
+.B SOURCE_DATE_EPOCH
+is set,
+.B mkinitramfs
+attempts to generate a reproducible ramdisk.
+
 .SH FILES
 .TP
 .I /etc/initramfs-tools/initramfs.conf

@@ -338,6 +338,10 @@ if ! ldconfig -r "$DESTDIR" ; then
 	[ $(id -u) != "0" ] \
 	&& echo "ldconfig might need uid=0 (root) for chroot()" >&2
 fi
+# The auxiliary cache is not reproducible and is always invalid at boot
+# (see #845034)
+rm -f "${DESTDIR}"/var/cache/ldconfig/aux-cache
+rmdir --ignore-fail-on-non-empty "${DESTDIR}"/var/cache/ldconfig
 
 # Apply DSDT to initramfs
 if [ -e "${CONFDIR}/DSDT.aml" ]; then

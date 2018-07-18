@@ -228,6 +228,7 @@ any stale remote branches locally by executing:
 
 ***
 
-*--  Michael Prokop &lt;[mika@debian.org](mailto:mika@debian.org)&gt;*
+*--  Michael Prokop &lt;[mika@debian.org](mailto:mika@debian.org)&gt;,
+Ben Hutchings &lt;[ben@decadent.org.uk](mailto:ben@decadent.org.uk)&gt;*
 
 ***

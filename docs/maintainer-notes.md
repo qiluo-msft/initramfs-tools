@@ -22,7 +22,7 @@
 ***
 
 **NOTE:** The most recent version of this document is available at
-docs/maintainer-notes.html in the [the git repository](#checkout)
+docs/maintainer-notes.md in the [the git repository](#checkout)
 or online at [salsa.debian.org](https://salsa.debian.org/kernel-team/initramfs-tools/blob/master/docs/maintainer-notes.md).
 
 ***

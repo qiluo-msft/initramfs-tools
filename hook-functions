@@ -91,9 +91,9 @@ manual_add_modules()
 				fi
 
 				kmod_modname="${kmod##*/}"
-				kmod_modname="${kmod_modname%.ko}"
+				kmod_modname="${kmod_modname%%.*}"
 				if grep -q "^$kmod_modname\\>" /proc/modules "${CONFDIR}/modules"; then
-					echo "W: Possible missing firmware /lib/firmware/${firmware} for module $(basename ${kmod} .ko)" >&2
+					echo "W: Possible missing firmware /lib/firmware/${firmware} for module ${kmod_modname}" >&2
 				fi
 				continue
 			fi
@@ -215,13 +215,17 @@ copy_modules_dir()
 	# Build up an expression for find
 	first=true
 	for exclude in "$@"; do
+		# Change .ko suffix in exclusion to .ko*
+		if [ "${exclude%.ko}" != "${exclude}" ]; then
+			exclude="${exclude}*"
+		fi
 		$first && set --
 		set -- "$@" -name "${exclude}" -prune -o
 		first=false
 	done
 
-	for kmod in $(find "${MODULESDIR}/${dir}" "$@" -name '*.ko' -printf '%f\n'); do
-		modules="$modules ${kmod%.ko}"
+	for kmod in $(find "${MODULESDIR}/${dir}" "$@" -name '*.ko*' -printf '%f\n'); do
+		modules="$modules ${kmod%%.*}"
 	done
 	manual_add_modules $modules
 }
@@ -615,11 +619,11 @@ hidden_dep_add_modules()
 	manual_add_modules $(
 		{
 			cat "${DESTDIR}/lib/modules/${version}/modules.builtin"
-			find "${DESTDIR}/lib/modules/${version}/kernel" -name '*.ko'
+			find "${DESTDIR}/lib/modules/${version}/kernel" -name '*.ko*'
 		} |
 		while read module; do
 			module="${module##*/}"
-			module="${module%.ko}"
+			module="${module%%.*}"
 			case "$module" in
 			libcrc32c)
 				echo crc32c

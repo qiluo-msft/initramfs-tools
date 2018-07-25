@@ -1,5 +1,7 @@
-/files
+/*.debhelper
 /*.debhelper.log
 /*.substvars
+/.debhelper
+/files
 /initramfs-tools/
 /initramfs-tools-core/

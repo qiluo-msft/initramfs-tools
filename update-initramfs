@@ -202,8 +202,13 @@ ro_boot_check()
 
 get_sorted_versions()
 {
-	version_list="$(ls -1 "${STATEDIR}" | linux-version sort --reverse)"
-
+	version_list="$(
+		linux-version list |
+		while read version; do
+		      test -e "${BOOTDIR}/initrd.img-$version" && echo "$version"
+		done |
+		linux-version sort --reverse
+		)"
 	verbose "Available versions: ${version_list}"
 }
 

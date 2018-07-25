@@ -1,6 +1,5 @@
 #!/bin/sh
 
-STATEDIR=/var/lib/initramfs-tools
 BOOTDIR=/boot
 CONF=/etc/initramfs-tools/update-initramfs.conf
 mode=""
@@ -149,7 +148,6 @@ generate_initramfs()
 	fi
 	if mkinitramfs ${OPTS} "${initramfs}.new" "${version}"; then
 		mv -f "${initramfs}.new" "${initramfs}"
-		set_sha1
 		# Guard against an unclean shutdown
 		sync -f "${initramfs}"
 	else
@@ -170,17 +168,6 @@ run_bootloader()
 			/etc/initramfs/post-update.d/
 		return 0
 	fi
-}
-
-# Note that this must overwrite so that updates work.
-set_sha1()
-{
-	sha1sum "${initramfs}" > "${STATEDIR}/${version}"
-}
-
-delete_sha1()
-{
-	rm -f "${STATEDIR}/${version}"
 }
 
 # ro /boot is not modified
@@ -307,8 +294,6 @@ delete()
 	set_initramfs
 
 	echo "update-initramfs: Deleting ${initramfs}"
-
-	delete_sha1
 
 	rm -f "${initramfs}" "${initramfs}.bak"
 }

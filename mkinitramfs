@@ -215,7 +215,13 @@ export __TMPCPIOGZ
 # Private, used by 'prepend_earlyinitramfs'.
 export __TMPEARLYCPIO
 
-for d in bin conf/conf.d etc lib/modules run sbin scripts ${MODULESDIR}; do
+# Create usr-merged filesystem layout, to avoid duplicates if the host
+# filesystem is usr-merged.
+for d in /bin /lib* /sbin; do
+	mkdir -p "${DESTDIR}/usr${d}"
+	ln -s "usr${d}" "${DESTDIR}${d}"
+done
+for d in conf/conf.d etc run scripts ${MODULESDIR}; do
 	mkdir -p "${DESTDIR}/${d}"
 done
 

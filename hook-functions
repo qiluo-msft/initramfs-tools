@@ -197,7 +197,7 @@ copy_exec() {
 # Copy entire subtrees to the initramfs
 copy_modules_dir()
 {
-	local kmod exclude
+	local kmod first exclude
 	local modules=
 	local dir="$1"
 	shift
@@ -211,11 +211,16 @@ copy_modules_dir()
 			echo "(excluding $*)"
 		fi
 	fi
-	while [ $# -ge 1 ]; do
-		exclude="${exclude:-} -name $1 -prune -o "
-		shift
+
+	# Build up an expression for find
+	first=true
+	for exclude in "$@"; do
+		$first && set --
+		set -- "$@" -name "${exclude}" -prune -o
+		first=false
 	done
-	for kmod in $(find "${MODULESDIR}/${dir}" ${exclude:-} -name '*.ko' -printf '%f\n'); do
+
+	for kmod in $(find "${MODULESDIR}/${dir}" "$@" -name '*.ko' -printf '%f\n'); do
 		modules="$modules ${kmod%.ko}"
 	done
 	manual_add_modules $modules

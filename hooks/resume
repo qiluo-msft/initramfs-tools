@@ -56,6 +56,13 @@ if ! ischroot && [ -r /proc/swaps ]; then
 			done < /etc/crypttab
 		fi
 
+		# zram is ephemeral
+		case "$resume_auto" in
+		/dev/zram*)
+			ephemeral=true
+			;;
+		esac
+
 		$ephemeral || break
 	done
 

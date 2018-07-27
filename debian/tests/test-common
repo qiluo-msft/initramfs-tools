@@ -55,19 +55,26 @@ build_initramfs() {
 	mkinitramfs -d "${CONFDIR}" -o "${INITRAMFS}" "${KVER}"
 }
 
-build_rootfs_ext2() {
+build_fs_ext2() {
+	local dir="${1}"
+	local disk="${2}"
+
 	# Get directory size
-	local blocks="$(du --summarize "${ROOTDIR}" | cut -f 1)"
-	local inodes="$(du --summarize --inodes "${ROOTDIR}" | cut -f 1)"
+	local blocks="$(du --summarize "${dir}" | cut -f 1)"
+	local inodes="$(du --summarize --inodes "${dir}" | cut -f 1)"
 
 	# Add fudge factor
-	blocks="$((blocks + blocks / 4))"
+	blocks="$((blocks + 10 + blocks / 4))"
 	inodes="$((inodes + 10))"
 
-	genext2fs -b "${blocks}" -N "${inodes}" -U -d "${ROOTDIR}" "${ROOTDISK}"
+	genext2fs -b "${blocks}" -N "${inodes}" -U -d "${dir}" "${disk}"
+}
+
+build_rootfs_ext2() {
+	build_fs_ext2 "${ROOTDIR}" "${ROOTDISK}"
 }
 
 run_qemu_amd64() {
-	timeout --foreground 60 qemu-system-x86_64 -m 1G -drive "file=${ROOTDISK},if=${ROOTDISK_QEMU_IF},media=disk,format=raw" -nographic -no-reboot -kernel "/boot/vmlinuz-${KVER}" -initrd "${INITRAMFS}" -append "root=/dev/${ROOTDISK_LINUX_NAME} ro console=ttyS0,115200 panic=-1 " | tee "${OUTPUT}"
+	timeout --foreground 60 qemu-system-x86_64 -m 1G -drive "file=${ROOTDISK},if=${ROOTDISK_QEMU_IF},media=disk,format=raw" ${USRDISK:+-drive "file=${USRDISK},if=${USRDISK_QEMU_IF},media=disk,format=raw"} -nographic -no-reboot -kernel "/boot/vmlinuz-${KVER}" -initrd "${INITRAMFS}" -append "root=/dev/${ROOTDISK_LINUX_NAME} ro console=ttyS0,115200 panic=-1 " | tee "${OUTPUT}"
 	grep -qF "${INIT_MESSAGE}" "${OUTPUT}"
 }

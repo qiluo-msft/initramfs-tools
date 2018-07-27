@@ -208,6 +208,7 @@ export KEYMAP
 export MODULES
 export BUSYBOX
 export RESUME
+export FSTYPE
 
 # Private, used by 'catenate_cpiogz'.
 export __TMPCPIOGZ

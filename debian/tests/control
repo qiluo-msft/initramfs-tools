@@ -1,2 +1,5 @@
 Tests: amd64-klibc
 Depends: @, qemu-system-x86, linux-image-amd64, klibc-utils, genext2fs
+
+Tests: amd64-busybox
+Depends: @, qemu-system-x86, linux-image-amd64, klibc-utils, busybox | busybox-initramfs, genext2fs

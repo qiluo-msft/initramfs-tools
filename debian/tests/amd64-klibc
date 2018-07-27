@@ -16,4 +16,4 @@ build_rootfs_ext2
 run_qemu_amd64
 
 # Check that fsck ran
-grep "^/dev/${ROOTDISK_LINUX_NAME}: clean," "${OUTPUT}"
+grep -q "^/dev/${ROOTDISK_LINUX_NAME}: clean," "${OUTPUT}"

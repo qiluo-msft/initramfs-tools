@@ -68,6 +68,6 @@ build_rootfs_ext2() {
 }
 
 run_qemu_amd64() {
-	qemu-system-x86_64 -m 1G -drive "file=${ROOTDISK},if=${ROOTDISK_QEMU_IF},media=disk,format=raw" -nographic -no-reboot -kernel "/boot/vmlinuz-${KVER}" -initrd "${INITRAMFS}" -append "root=/dev/${ROOTDISK_LINUX_NAME} ro console=ttyS0,115200 panic=-1 " > "${OUTPUT}"
-	grep -F "${INIT_MESSAGE}" "${OUTPUT}"
+	qemu-system-x86_64 -m 1G -drive "file=${ROOTDISK},if=${ROOTDISK_QEMU_IF},media=disk,format=raw" -nographic -no-reboot -kernel "/boot/vmlinuz-${KVER}" -initrd "${INITRAMFS}" -append "root=/dev/${ROOTDISK_LINUX_NAME} ro console=ttyS0,115200 panic=-1 " | tee "${OUTPUT}"
+	grep -qF "${INIT_MESSAGE}" "${OUTPUT}"
 }

@@ -1,44 +1,19 @@
 #!/bin/sh -e
 
-if [ -n "${AUTOPKGTEST_TMP}" ]; then
-    export TMPDIR="${AUTOPKGTEST_TMP}"
-fi
-CONFDIR="$(mktemp -d)"
-INITRAMFS="$(mktemp)"
-OUTPUT="$(mktemp)"
-ROOTDIR="$(mktemp -d)"
-ROOTDISK="$(mktemp)"
-KVER="$(dpkg-query -Wf '${Depends}' linux-image-amd64 | sed 's/^linux-image-//')"
+LOCALVERSION=-amd64
+. debian/tests/test-common
 
-# Create an initramfs
 cat >"${CONFDIR}/initramfs.conf" <<EOF
 MODULES=most
 BUSYBOX=n
 FSTYPE=ext2
 EOF
-touch "${CONFDIR}/modules"
-mkdir "${CONFDIR}/scripts"
-mkinitramfs -d "${CONFDIR}" -o "${INITRAMFS}" "${KVER}"
+build_initramfs
 ! lsinitramfs "${INITRAMFS}" | grep -qw busybox
 
-# Create a root fs with a trivial userspace
-for subdir in bin dev lib proc run sbin sys; do
-    mkdir "${ROOTDIR}/${subdir}"
-done
-MESSAGE='smoke-amd64: booted to a shell'
-cat >"${ROOTDIR}/sbin/init" <<EOF
-#!/bin/sh -e
-test -b /dev/vda
-echo '${MESSAGE}'
-poweroff
-EOF
-chmod a+x "${ROOTDIR}/sbin/init"
-cp /usr/lib/klibc/bin/sh.shared "${ROOTDIR}/bin/sh"
-cp /usr/lib/klibc/bin/poweroff "${ROOTDIR}/bin/poweroff"
-cp "$(dpkg -L libklibc | grep '^/lib/klibc.*\.so$')" "${ROOTDIR}/lib/"
-genext2fs -b 1000 -U -d "${ROOTDIR}" "${ROOTDISK}"
+build_rootfs_ext2
 
-# Boot; check that fsck and our init script run
-qemu-system-x86_64 -m 1G -drive "file=${ROOTDISK},if=virtio,media=disk,format=raw" -nographic -no-reboot -kernel "/boot/vmlinuz-${KVER}" -initrd "${INITRAMFS}" -append "root=/dev/vda ro console=ttyS0,115200 panic=-1 " > "${OUTPUT}"
-grep "^/dev/vda: clean," "${OUTPUT}"
-grep -F "${MESSAGE}" "${OUTPUT}"
+run_qemu_amd64
+
+# Check that fsck ran
+grep "^/dev/${ROOTDISK_LINUX_NAME}: clean," "${OUTPUT}"

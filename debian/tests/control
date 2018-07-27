@@ -1,0 +1,2 @@
+Tests: amd64-klibc
+Depends: @, qemu-system-x86, linux-image-amd64, klibc-utils, genext2fs

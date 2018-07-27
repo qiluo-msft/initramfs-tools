@@ -40,11 +40,30 @@ panic()
 	fi
 
 	echo "$@"
-	# Disallow console access
+
+	# The panic= parameter implies we should disallow console access
 	if [ -n "${panic}" ]; then
-		echo "Rebooting automatically due to panic= boot argument"
-		sleep ${panic}
-		reboot
+		delay=
+		case "${panic}" in
+		-*[![:digit:].]*)	# invalid: wait forever
+			;;
+		-*)			# timeout < 0: reboot immediately
+			delay=0
+			;;
+		0 | *[![:digit:].]*)	# timeout = 0 or invalid: wait forever
+			;;
+		*)			# timeout > 0: seconds before rebooting
+			delay=${panic}
+			;;
+		esac
+		if [ -n "${delay}" ]; then
+			echo "Rebooting automatically due to panic= boot argument"
+			sleep ${delay}
+			reboot
+		else
+			echo "Halting automatically due to panic= boot argument"
+			halt
+		fi
 		exit  # in case reboot fails, force kernel panic
 	fi
 

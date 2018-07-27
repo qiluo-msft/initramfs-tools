@@ -23,12 +23,16 @@ test -n "${ROOTDISK_LINUX_NAME}" || ROOTDISK_LINUX_NAME=vda
 # Create a root fs with a trivial userspace
 ROOTDIR="$(mktemp -d)"
 INIT_MESSAGE='root fs init system started successfully'
-for subdir in bin dev lib proc run sbin sys; do
+for subdir in bin dev lib proc run sbin sys usr usr/bin; do
 	mkdir "${ROOTDIR}/${subdir}"
 done
 cat >"${ROOTDIR}/sbin/init" <<EOF
 #!/bin/sh -e
 test -b /dev/${ROOTDISK_LINUX_NAME}
+test -d /proc/1
+test -d /run/initramfs
+test -d /sys/class
+test -d /usr/bin
 echo '${INIT_MESSAGE}'
 poweroff
 EOF

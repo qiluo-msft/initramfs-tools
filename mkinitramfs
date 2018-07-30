@@ -131,7 +131,6 @@ case "${version}" in
 	;;
 esac
 
-# Check userspace and kernel support for compressed initramfs images
 if [ -z "${compress:-}" ]; then
 	compress=${COMPRESS}
 else
@@ -143,12 +142,6 @@ if ! command -v "${compress}" >/dev/null 2>&1; then
 	[ "${verbose}" = y ] && \
 		echo "No ${COMPRESS} in ${PATH}, using gzip"
 	COMPRESS=gzip
-fi
-
-if dpkg --compare-versions "${version}" lt "2.6.38" 2>/dev/null; then
-	compress=gzip
-	[ "${verbose}" = y ] && \
-		echo "linux-2.6 likely misses ${COMPRESS} support, using gzip"
 fi
 
 [ "${compress}" = gzip ] && [ -n "${SOURCE_DATE_EPOCH}" ] && compress="gzip -n"

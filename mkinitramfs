@@ -133,15 +133,13 @@ esac
 
 if [ -z "${compress:-}" ]; then
 	compress=${COMPRESS}
-else
-	COMPRESS=${compress}
 fi
+unset COMPRESS
 
 if ! command -v "${compress}" >/dev/null 2>&1; then
 	compress=gzip
 	[ "${verbose}" = y ] && \
-		echo "No ${COMPRESS} in ${PATH}, using gzip"
-	COMPRESS=gzip
+		echo "No ${compress} in ${PATH}, using gzip"
 fi
 
 [ "${compress}" = gzip ] && [ -n "${SOURCE_DATE_EPOCH}" ] && compress="gzip -n"

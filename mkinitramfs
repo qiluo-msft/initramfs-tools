@@ -142,10 +142,13 @@ if ! command -v "${compress}" >/dev/null 2>&1; then
 		echo "No ${compress} in ${PATH}, using gzip"
 fi
 
-[ "${compress}" = gzip ] && [ -n "${SOURCE_DATE_EPOCH}" ] && compress="gzip -n"
-[ "${compress}" = lz4 ] && compress="lz4 -9 -l"
-[ "${compress}" = lzop ] && compress="lzop -9"
-[ "${compress}" = xz ] && compress="xz --check=crc32"
+case "${compress}" in
+gzip)	[ -n "${SOURCE_DATE_EPOCH}" ] && compress="gzip -n"
+lz4)	compress="lz4 -9 -l" ;;
+lzop)	compress="lzop -9" ;;
+xz)	compress="xz --check=crc32" ;;
+*)	echo "W: Unknown compression command ${compress}" >&2 ;;
+esac
 
 if [ -d "${outfile}" ]; then
 	echo "${outfile} is a directory" >&2

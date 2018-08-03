@@ -23,8 +23,7 @@ linux-image-*)
 	;;
 ?*)
 	if	   [ $# = 1 ]						\
-		&& [ x"$1" = x-u ]					\
-		&& dpkg-trigger --check-supported 2>/dev/null
+		&& [ x"$1" = x-u ]
 	then
 		if dpkg-trigger --no-await update-initramfs; then
 			echo "update-initramfs: deferring update (trigger activated)"

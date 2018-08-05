@@ -314,11 +314,10 @@ delete()
 
 # Defaults
 verbose=0
-yes=0
 
 ##
 
-while getopts "k:cudyvtb:h?" flag; do
+while getopts "k:cudvtb:h?" flag; do
 	case "${flag}" in
 	k)
 		version="${OPTARG}"
@@ -334,9 +333,6 @@ while getopts "k:cudyvtb:h?" flag; do
 		;;
 	v)
 		verbose="1"
-		;;
-	y)
-		yes="1"
 		;;
 	t)
 		# accepted for compatibility, but ignored
@@ -368,7 +364,6 @@ fi
 
 if [ "${version}" = "all" ] \
 	|| ( [ "${update_initramfs}" = "all" ] && [ -z "${version}" ] ); then
-	: FIXME check for --yes, and if not ask are you sure
 	get_sorted_versions
 	if [ -z "${version_list}" ]; then
 		verbose "Nothing to do, exiting."
@@ -378,9 +373,6 @@ if [ "${version}" = "all" ] \
 	OPTS="-b ${BOOTDIR}"
 	if [ "${verbose}" = "1" ]; then
 		OPTS="${OPTS} -v"
-	fi
-	if [ "${yes}" = "1" ]; then
-		OPTS="${OPTS} -y"
 	fi
 	for u_version in ${version_list}; do
 		verbose "Execute: ${0} -${mode} -k \"${u_version}\" ${OPTS}"

@@ -131,30 +131,24 @@ case "${version}" in
 	;;
 esac
 
-# Check userspace and kernel support for compressed initramfs images
 if [ -z "${compress:-}" ]; then
 	compress=${COMPRESS}
-else
-	COMPRESS=${compress}
 fi
+unset COMPRESS
 
 if ! command -v "${compress}" >/dev/null 2>&1; then
 	compress=gzip
 	[ "${verbose}" = y ] && \
-		echo "No ${COMPRESS} in ${PATH}, using gzip"
-	COMPRESS=gzip
+		echo "No ${compress} in ${PATH}, using gzip"
 fi
 
-if dpkg --compare-versions "${version}" lt "2.6.38" 2>/dev/null; then
-	compress=gzip
-	[ "${verbose}" = y ] && \
-		echo "linux-2.6 likely misses ${COMPRESS} support, using gzip"
-fi
-
-[ "${compress}" = gzip ] && [ -n "${SOURCE_DATE_EPOCH}" ] && compress="gzip -n"
-[ "${compress}" = lz4 ] && compress="lz4 -9 -l"
-[ "${compress}" = lzop ] && compress="lzop -9"
-[ "${compress}" = xz ] && compress="xz --check=crc32"
+case "${compress}" in
+gzip)	[ -n "${SOURCE_DATE_EPOCH}" ] && compress="gzip -n"
+lz4)	compress="lz4 -9 -l" ;;
+lzop)	compress="lzop -9" ;;
+xz)	compress="xz --check=crc32" ;;
+*)	echo "W: Unknown compression command ${compress}" >&2 ;;
+esac
 
 if [ -d "${outfile}" ]; then
 	echo "${outfile} is a directory" >&2
